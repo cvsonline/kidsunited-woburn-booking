@@ -54,6 +54,9 @@ input:focus,select:focus,textarea:focus{outline:3px solid var(--lime)}
 .done p{color:#e6e6e6}
 .done .btn{display:inline-block;width:auto;padding:12px 26px;font-size:16px;text-decoration:none}
 footer{text-align:center;color:var(--gray);font-size:13px;padding:6px 16px 36px}
+.known{border-radius:16px;background:#111;border:1px solid var(--line);padding:12px 16px;color:#e6e6e6;font-size:15px}
+.known b{color:#fff}
+.known button{background:none;border:0;color:var(--lime);font:inherit;text-decoration:underline;cursor:pointer;padding:0;margin-left:6px}
 .hidden{display:none}
 </style>
 </head>
@@ -81,17 +84,21 @@ footer{text-align:center;color:var(--gray);font-size:13px;padding:6px 16px 36px}
 
   <section class="card hidden" id="s3">
     <span class="step">STEP 3</span>
-    <h2>your details</h2>
+    <h2 id="s3title">your details</h2>
+    <div class="known hidden" id="known"></div>
     <form id="f" novalidate>
       <div class="row">
         <div><label for="child">child's first name</label><input id="child" required autocomplete="off" placeholder="child's first name"></div>
-        <div><label for="dob">child's date of birth</label><input id="dob" type="date" required></div>
+        <div><label for="dob">child's date of birth <span id="dobOpt" class="hidden">(optional)</span></label><input id="dob" type="date"></div>
       </div>
+      <div id="contact">
       <label for="parent">parent / guardian name</label><input id="parent" required autocomplete="name" placeholder="your full name">
       <div class="row">
         <div><label for="phone">mobile phone</label><input id="phone" type="tel" required autocomplete="tel" placeholder="(781) 555-0123"></div>
         <div><label for="email">email</label><input id="email" type="email" required autocomplete="email" placeholder="you@email.com"></div>
       </div>
+      </div>
+      <div id="extra">
       <div class="row">
         <div><label for="played">played soccer before?</label>
           <select id="played"><option value="">select…</option><option>No, first time</option><option>Yes, a little</option><option>Yes, on a team</option></select></div>
@@ -100,6 +107,7 @@ footer{text-align:center;color:var(--gray);font-size:13px;padding:6px 16px 36px}
       </div>
       <label for="notes">anything we should know? (optional)</label>
       <textarea id="notes" rows="2" placeholder="anything we should know before the class?"></textarea>
+      </div>
       <input class="hp" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
       <label class="check"><input type="checkbox" id="consent" required>
         <span>I agree to receive calls and texts from KidsUnited Woburn about my booking and programs. Reply STOP to opt out. Msg &amp; data rates may apply.</span></label>
@@ -141,7 +149,7 @@ const PROGRAMS = [                     // self-bookable trial programs (advanced
 const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 // ---- state ----
-let schedule = [], counts = {}, capacity = 3, prog = null, pick = null;
+let schedule = [], counts = {}, capacity = 3, prog = null, pick = null, prefilled = false;
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2, '0');
 const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -199,12 +207,12 @@ $('f').onsubmit = async e => {
   e.preventDefault();
   $('err').textContent = '';
   const v = id => $(id).value.trim();
-  if (!v('child') || !v('dob') || !v('parent') || !v('email')) return $('err').textContent = 'Please fill in all the fields above.';
+  if (!v('child') || (!prefilled && !v('dob')) || !v('parent') || !v('email')) return $('err').textContent = prefilled && v('child') ? 'Please check your contact details (tap edit).' : 'Please fill in all the fields above.';
   if (v('phone').replace(/\D/g, '').length < 10) return $('err').textContent = 'Please enter a 10-digit mobile number.';
   if (!/^\S+@\S+\.\S+$/.test(v('email'))) return $('err').textContent = 'Please check your email address.';
   if (!$('consent').checked) return $('err').textContent = 'Please tick the box so we can confirm your booking.';
-  const a = ageOn(v('dob'), pick.at);
-  if (a < prog.from - 0.25 || a >= prog.to + 0.25)
+  const a = v('dob') ? ageOn(v('dob'), pick.at) : null;
+  if (a !== null && (a < prog.from - 0.25 || a >= prog.to + 0.25))
     if (!confirm(`Your child will be about ${a.toFixed(1)} years old, and ${prog.label} is for ${prog.ages}. Book anyway? (Our coaches will make sure they're in the right group.)`)) return;
   const body = {
     slot: pick.slot, date: ymd(pick.d), time: pick.time, program: prog.label,
@@ -250,6 +258,22 @@ function done(b) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function prefill(h) {
+  prefilled = true;
+  $('parent').value = h.get('n'); $('phone').value = h.get('p'); $('email').value = h.get('e');
+  if (h.get('c')) $('child').value = h.get('c');
+  if (h.get('s') === 'ig') $('heard').value = 'Facebook / Instagram';
+  const first = h.get('n').split(' ')[0];
+  document.querySelector('.hero .sub').textContent = `hi ${first}! pick your free class`;
+  $('s3title').textContent = 'almost done';
+  $('known').innerHTML = `Booking for <b>${esc(h.get('n'))}</b> · ${esc(h.get('p'))} · ${esc(h.get('e'))}<button type="button" id="edit">edit</button>`;
+  $('known').classList.remove('hidden');
+  $('contact').classList.add('hidden'); $('extra').classList.add('hidden'); $('dobOpt').classList.remove('hidden');
+  $('edit').onclick = () => { $('contact').classList.remove('hidden'); $('extra').classList.remove('hidden'); $('known').classList.add('hidden'); };
+  history.replaceState(null, '', location.pathname);   // drop personal details from the address bar
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
 async function loadCounts() {
   if (!SCRIPT_URL) return;
   try { const j = await (await fetch(SCRIPT_URL)).json(); counts = j.counts || {}; capacity = j.capacity || capacity; } catch (e) {}
@@ -263,8 +287,11 @@ async function loadCounts() {
   } catch (e) {
     $('ages').insertAdjacentHTML('afterend', '<p class="err">We could not load the class schedule. Please call (781) 404-3490.</p>');
   }
-  const pre = new URLSearchParams(location.search).get('age');   // e.g. ?age=kub from an ad
+  // ?age=kub from an ad, or a personal link #n=Name&p=phone&e=email&a=kub&c=Child&s=ig (hash is never sent to the server)
+  const q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.slice(1));
   const map = { kub: 0, champs: 1, junior: 2, dts: 3, pro: 4 };
+  if (h.get('n') && h.get('p') && h.get('e')) prefill(h);
+  const pre = h.get('a') || q.get('age');
   if (pre in map) choose(PROGRAMS[map[pre]]);
 })();
 </script>

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Make a Booking Link | KidsUnited Woburn</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#94D600;--gray:#bdbcbc}
+*{box-sizing:border-box}
+body{margin:0;background:#000;color:#fff;font-family:Comfortaa,system-ui,sans-serif;padding:20px 16px 40px}
+main{max-width:620px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+p.sub{color:var(--gray);margin:0 0 16px;font-size:14px}
+label{display:block;font-size:14px;margin:12px 0 6px}
+textarea,input,select{width:100%;font-family:Arial,system-ui,sans-serif;font-size:15px;padding:12px 14px;border:0;border-radius:14px;background:#fff;color:#111}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+.out{margin-top:18px;border:2px solid var(--lime);border-radius:20px;padding:16px}
+.out textarea{min-height:110px}
+button{margin-top:10px;padding:12px 20px;border:0;border-radius:999px;background:var(--lime);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.ok{color:var(--lime);margin-left:10px;font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Make a booking link</h1>
+  <p class="sub">Paste the parent's Instagram / Facebook message. The link opens the booking page with their details filled in, so they only pick a day.</p>
+
+  <label for="msg">Parent's message</label>
+  <textarea id="msg" rows="6" placeholder="Full name: Gab&#10;Phone number: 7818641111&#10;Email: name@gmail.com&#10;How old is your child?: 1.5 - 2 years"></textarea>
+
+  <div class="row">
+    <div><label for="n">Parent name</label><input id="n"></div>
+    <div><label for="c">Child's name (if known)</label><input id="c"></div>
+  </div>
+  <div class="row">
+    <div><label for="p">Phone</label><input id="p"></div>
+    <div><label for="e">Email</label><input id="e"></div>
+  </div>
+  <div class="row">
+    <div><label for="a">Age group</label>
+      <select id="a">
+        <option value="">Let the parent choose</option>
+        <option value="kub">KUB · 18 mo – 2.5</option>
+        <option value="champs">Little Champs · 2.5 – 3.5</option>
+        <option value="junior">DTS Junior · 3.5 – 5</option>
+        <option value="dts">Drills to Skills · 5 – 7</option>
+        <option value="pro">DTS Pro · 7 – 10</option>
+      </select></div>
+    <div><label for="lang">Reply language</label>
+      <select id="lang"><option value="en">English</option><option value="es">Español</option><option value="pt">Português</option></select></div>
+  </div>
+
+  <div class="out">
+    <label for="reply" style="margin-top:0">Reply to paste</label>
+    <textarea id="reply" readonly></textarea>
+    <button id="copy">Copy reply</button><span class="ok" id="ok"></span>
+  </div>
+</main>
+<script>
+const BASE = 'https://book.kidsunitedwoburn.com/';
+const $ = id => document.getElementById(id);
+
+function field(text, ...keys) {
+  for (const k of keys) {
+    const m = text.match(new RegExp('^\\s*' + k + '[^:\\n]*:\\s*(.+)$', 'im'));
+    if (m) return m[1].trim();
+  }
+  return '';
+}
+
+// "1.5 - 2 years" → kub; "3 - 4 years" spans two programs → let the parent choose.
+function ageGroup(s) {
+  const nums = (s.match(/\d+(\.\d+)?/g) || []).map(Number);
+  if (!nums.length) return '';
+  const lo = nums[0], hi = nums[nums.length - 1];
+  const g = x => x < 2.5 ? 'kub' : x < 3.5 ? 'champs' : x < 5 ? 'junior' : x < 7 ? 'dts' : x <= 10 ? 'pro' : '';
+  return g(lo) === g(hi) ? g(lo) : '';
+}
+
+$('msg').oninput = () => {
+  const t = $('msg').value;
+  $('n').value = field(t, 'Full name', 'Name');
+  $('p').value = field(t, 'Phone number', 'Phone').replace(/[^\d+]/g, '');
+  $('e').value = field(t, 'Email');
+  $('a').value = ageGroup(field(t, 'How old', 'Age', 'Child'));
+  build();
+};
+['n', 'c', 'p', 'e', 'a', 'lang'].forEach(id => $(id).addEventListener('input', build));
+
+function build() {
+  const n = $('n').value.trim(), p = $('p').value.trim(), e = $('e').value.trim();
+  if (!n || !p || !e) { $('reply').value = ''; return; }
+  const h = new URLSearchParams({ n, p, e, s: 'ig' });
+  if ($('a').value) h.set('a', $('a').value);
+  if ($('c').value.trim()) h.set('c', $('c').value.trim());
+  const link = BASE + '#' + h.toString();
+  const first = n.split(' ')[0];
+  const msgs = {
+    en: `Hi ${first}! Thanks for reaching out to KidsUnited Woburn ⚽ Your child's first class is FREE. Just pick a day and time that works for you here (your details are already filled in):\n${link}\n\nQuestions? Call or text (781) 404-3490.`,
+    es: `¡Hola ${first}! Gracias por contactar a KidsUnited Woburn ⚽ La primera clase de su hijo/a es GRATIS. Elija el día y la hora aquí (sus datos ya están completos):\n${link}\n\n¿Preguntas? Llame o escriba al (781) 404-3490.`,
+    pt: `Olá ${first}! Obrigado por entrar em contato com a KidsUnited Woburn ⚽ A primeira aula do seu filho é GRÁTIS. Escolha o dia e o horário aqui (seus dados já estão preenchidos):\n${link}\n\nDúvidas? Ligue ou mande mensagem para (781) 404-3490.`,
+  };
+  $('reply').value = msgs[$('lang').value];
+}
+
+$('copy').onclick = async () => {
+  if (!$('reply').value) return;
+  await navigator.clipboard.writeText($('reply').value);
+  $('ok').textContent = 'Copied!'; setTimeout(() => $('ok').textContent = '', 1500);
+};
+</script>
+</body>
+</html>
