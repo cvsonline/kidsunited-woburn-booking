@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book a Free Trial Class | KidsUnited Woburn</title>
+<meta name="description" content="Book your child's free trial soccer class at KidsUnited Woburn, 240 W Cummings Park. Ages 18 months to 10 years.">
+<meta property="og:title" content="Book a FREE trial class — KidsUnited Woburn">
+<meta property="og:description" content="Indoor soccer for ages 18 months – 10 years. Pick a class time that works for you.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0B0B0B;--green:#94D600;--green-d:#6f9f00;--bg:#f6f7f3;--card:#fff;--line:#e3e6dc;--muted:#5f6659;--err:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Nunito,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px}
+header{background:var(--ink);color:#fff;padding:18px 16px 22px;text-align:center}
+header img{height:22px}
+header .loc{font-weight:900;letter-spacing:.25em;color:var(--green);font-size:13px;margin-top:6px}
+header h1{font-size:26px;margin:14px 0 4px;font-weight:900}
+header p{margin:0;color:#cfcfcf;font-size:14px}
+main{max-width:640px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.step{font-size:12px;font-weight:900;letter-spacing:.12em;color:var(--green-d);text-transform:uppercase}
+h2{font-size:20px;margin:4px 0 12px}
+.ages{display:grid;grid-template-columns:1fr;gap:8px}
+.age{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;font:inherit;cursor:pointer}
+.age b{font-size:16px}.age span{color:var(--muted);font-size:14px}
+.age.on{border-color:var(--green);background:#f3fbe3}
+.hint{color:var(--muted);font-size:13px;margin:10px 0 0}
+.day{margin:14px 0 6px;font-weight:800;font-size:15px}
+.slots{display:flex;flex-wrap:wrap;gap:8px}
+.slot{border:2px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font:inherit;cursor:pointer;min-width:96px;text-align:center}
+.slot small{display:block;color:var(--muted);font-size:12px}
+.slot.on{border-color:var(--green);background:#f3fbe3}
+.slot:disabled{opacity:.4;cursor:not-allowed}
+label{display:block;font-weight:700;font-size:14px;margin:12px 0 4px}
+input,select,textarea{width:100%;font:inherit;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--green);border-color:var(--green)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.row{grid-template-columns:1fr}}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:13px;color:var(--muted);margin-top:14px}
+.check input{width:auto;margin-top:3px}
+.btn{display:block;width:100%;margin-top:16px;padding:15px;border:0;border-radius:12px;background:var(--green);color:var(--ink);font:inherit;font-weight:900;font-size:17px;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:wait}
+.summary{background:#f3fbe3;border-radius:10px;padding:10px 12px;font-weight:700;margin-bottom:4px}
+.err{color:var(--err);font-weight:700;margin-top:10px}
+.hp{position:absolute;left:-9999px}
+.done{text-align:center}
+.done .big{font-size:44px}
+.done a{color:var(--ink);font-weight:800}
+.perks{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;margin-top:10px;color:#e6e6e6;font-size:13px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:10px 16px 30px}
+footer a{color:inherit}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <img src="logo.svg" alt="KidsUnited">
+  <div class="loc">WOBURN</div>
+  <h1>Book a FREE trial class</h1>
+  <p>Indoor soccer · ages 18 months – 10 years · 240 W Cummings Park</p>
+  <div class="perks"><span>✓ Small classes</span><span>✓ Certified coaches</span><span>✓ Padded indoor turf</span></div>
+</header>
+
+<main>
+  <section class="card" id="s1">
+    <div class="step">Step 1</div>
+    <h2>How old is your child?</h2>
+    <div class="ages" id="ages"></div>
+    <p class="hint">Not sure? Enter their birthday and we'll pick the right class:
+      <input type="date" id="dobPick" aria-label="Child's date of birth" style="margin-top:6px"></p>
+  </section>
+
+  <section class="card hidden" id="s2">
+    <div class="step">Step 2</div>
+    <h2>Pick a class time</h2>
+    <div id="slots"></div>
+  </section>
+
+  <section class="card hidden" id="s3">
+    <div class="step">Step 3</div>
+    <h2>Your details</h2>
+    <div class="summary" id="summary"></div>
+    <form id="f" novalidate>
+      <div class="row">
+        <div><label for="child">Child's first name</label><input id="child" required autocomplete="off"></div>
+        <div><label for="dob">Child's date of birth</label><input id="dob" type="date" required></div>
+      </div>
+      <label for="parent">Parent / guardian name</label><input id="parent" required autocomplete="name">
+      <div class="row">
+        <div><label for="phone">Mobile phone</label><input id="phone" type="tel" required autocomplete="tel" placeholder="(781) 555-0123"></div>
+        <div><label for="email">Email</label><input id="email" type="email" required autocomplete="email"></div>
+      </div>
+      <div class="row">
+        <div><label for="played">Played soccer before?</label>
+          <select id="played"><option value="">Select…</option><option>No, first time</option><option>Yes, a little</option><option>Yes, on a team</option></select></div>
+        <div><label for="heard">How did you hear about us?</label>
+          <select id="heard"><option value="">Select…</option><option>Facebook / Instagram</option><option>Google</option><option>Flyer</option><option>Friend or family</option><option>Event / parade</option><option>Other</option></select></div>
+      </div>
+      <label for="notes">Anything we should know? <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <textarea id="notes" rows="2"></textarea>
+      <input class="hp" id="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label class="check"><input type="checkbox" id="consent" required>
+        <span>I agree to receive calls and texts from KidsUnited Woburn about my booking and programs. Reply STOP to opt out. Msg &amp; data rates may apply.</span></label>
+      <div class="err" id="err" role="alert"></div>
+      <button class="btn" id="go" type="submit">Book my free class</button>
+    </form>
+  </section>
+
+  <section class="card done hidden" id="s4">
+    <div class="big">🎉</div>
+    <h2>You're booked!</h2>
+    <p id="doneText"></p>
+    <p>We've emailed your confirmation. Please arrive 10 minutes early in comfy clothes and sneakers, with a water bottle.</p>
+    <p><a id="ics" href="#">Add to my calendar</a></p>
+    <p style="color:var(--muted);font-size:14px">Pre-sale families get <b>$135/mo</b> (reg. $150) + a FREE Player Pack ($120 value) when they join by Dec 3.</p>
+  </section>
+</main>
+
+<footer>
+  KidsUnited Woburn · 240 W Cummings Park, Woburn, MA 01801 · Free parking, off I-95 Exit 54<br>
+  <a href="tel:+17814043490">(781) 404-3490</a> · <a href="https://www.kidsunited.com/woburn">kidsunited.com/woburn</a>
+</footer>
+
+<script>
+// ---- config ----
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxmrB6oCtBwa7a7q9QVKudnoojpwAWB7lP1Ea7t-5MXJTiRM_KR24DkCvBL2P7mXr8Qw/exec';                 // Apps Script web app URL (empty = demo mode, nothing saved)
+const SCHEDULE_URL = 'https://api.kidsunited.com/api/lists/locations/woburn/schedule';
+const OPEN_FROM = '2026-12-04';        // first day trials can be booked
+const WEEKS_AHEAD = 3;
+const MIN_NOTICE_HOURS = 12;
+const PROGRAMS = [                     // self-bookable trial programs (advanced classes are coach-placed)
+  { key: 'KUB KidsUnited Baby', label: 'KUB (parent & me)', ages: '18 mo – 2.5 yrs', from: 1.5, to: 2.5 },
+  { key: 'Little Champs', label: 'Little Champs (parent & me)', ages: '2.5 – 3.5 yrs', from: 2.5, to: 3.5 },
+  { key: 'Drills to Skills Junior', label: 'Drills to Skills Junior', ages: '3.5 – 5 yrs', from: 3.5, to: 5 },
+  { key: 'Drills to Skills', label: 'Drills to Skills', ages: '5 – 7 yrs', from: 5, to: 7 },
+  { key: 'Drills to Skills Pro', label: 'Drills to Skills Pro', ages: '7 – 10 yrs', from: 7, to: 10.01 },
+];
+
+// ---- state ----
+let schedule = [], counts = {}, capacity = 3, prog = null, pick = null;
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const fmtTime = t => { let [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return `${h}:${pad(m)} ${ap}`; };
+const fmtDay = d => d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+const ageOn = (dob, on) => (on - new Date(dob + 'T12:00')) / (365.25 * 864e5);
+
+function renderAges() {
+  $('ages').innerHTML = PROGRAMS.map((p, i) =>
+    `<button type="button" class="age${prog === p ? ' on' : ''}" data-i="${i}"><b>${p.ages}</b><span>${p.label}</span></button>`).join('');
+  $('ages').querySelectorAll('.age').forEach(b => b.onclick = () => choose(PROGRAMS[+b.dataset.i]));
+}
+
+function choose(p) {
+  prog = p; pick = null;
+  renderAges(); renderSlots();
+  $('s2').classList.remove('hidden'); $('s3').classList.add('hidden');
+  $('s2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+$('dobPick').onchange = e => {
+  if (!e.target.value) return;
+  const a = ageOn(e.target.value, new Date(OPEN_FROM + 'T12:00') > new Date() ? new Date(OPEN_FROM + 'T12:00') : new Date());
+  const p = PROGRAMS.find(p => a >= p.from && a < p.to);
+  $('dob').value = e.target.value;
+  if (p) choose(p);
+  else alert(a < 1.5 ? 'Our youngest class starts at 18 months. We would love to see you then!' : 'Our trial classes are for ages up to 10. Please call (781) 404-3490 and we will help.');
+};
+
+function sessions() {
+  const out = [], now = new Date();
+  const start = new Date(Math.max(new Date(OPEN_FROM + 'T00:00'), now));
+  start.setHours(0, 0, 0, 0);
+  for (let i = 0; i < WEEKS_AHEAD * 7; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const wd = d.getDay() === 0 ? 7 : d.getDay();
+    schedule.filter(c => c.program.name === prog.key && c.weekday_number === wd && c.start_date <= ymd(d)).forEach(c => {
+      const [h, m] = c.start_time.split(':').map(Number);
+      const at = new Date(d); at.setHours(h, m, 0, 0);
+      if (at - now < MIN_NOTICE_HOURS * 36e5) return;
+      const slot = `${ymd(d)}|${c.start_time}|${c.program.name}`;
+      out.push({ d, at, time: c.start_time, slot, left: Math.max(0, capacity - (counts[slot] || 0)) });
+    });
+  }
+  return out.sort((a, b) => a.at - b.at);
+}
+
+function renderSlots() {
+  const list = sessions();
+  if (!list.length) { $('slots').innerHTML = '<p>No open times right now. Please call <a href="tel:+17814043490">(781) 404-3490</a>.</p>'; return; }
+  let html = '', last = '';
+  list.forEach((s, i) => {
+    const day = fmtDay(s.d);
+    if (day !== last) { html += (last ? '</div>' : '') + `<div class="day">${day}</div><div class="slots">`; last = day; }
+    html += `<button type="button" class="slot${pick && pick.slot === s.slot ? ' on' : ''}" data-i="${i}" ${s.left ? '' : 'disabled'}>${fmtTime(s.time)}<small>${s.left ? s.left + ' spot' + (s.left > 1 ? 's' : '') + ' left' : 'Full'}</small></button>`;
+  });
+  $('slots').innerHTML = html + '</div>';
+  $('slots').querySelectorAll('.slot').forEach(b => b.onclick = () => {
+    pick = list[+b.dataset.i]; renderSlots();
+    $('summary').textContent = `${prog.label} · ${fmtDay(pick.d)} at ${fmtTime(pick.time)}`;
+    $('s3').classList.remove('hidden');
+    $('s3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+$('f').onsubmit = async e => {
+  e.preventDefault();
+  $('err').textContent = '';
+  const v = id => $(id).value.trim();
+  const phoneDigits = v('phone').replace(/\D/g, '');
+  if (!v('child') || !v('dob') || !v('parent') || !v('email')) return $('err').textContent = 'Please fill in all the fields above.';
+  if (phoneDigits.length < 10) return $('err').textContent = 'Please enter a 10-digit mobile number.';
+  if (!/^\S+@\S+\.\S+$/.test(v('email'))) return $('err').textContent = 'Please check your email address.';
+  if (!$('consent').checked) return $('err').textContent = 'Please tick the box so we can confirm your booking.';
+  const a = ageOn(v('dob'), pick.at);
+  if (a < prog.from - 0.25 || a >= prog.to + 0.25)
+    if (!confirm(`Your child will be about ${a.toFixed(1)} years old, and ${prog.label} is for ${prog.ages}. Book anyway? (Our coaches will make sure they're in the right group.)`)) return;
+  const body = {
+    slot: pick.slot, date: ymd(pick.d), time: pick.time, program: prog.label,
+    dateLabel: fmtDay(pick.d), timeLabel: fmtTime(pick.time),
+    child: v('child'), dob: v('dob'), parent: v('parent'), phone: v('phone'), email: v('email'),
+    played: v('played'), heard: v('heard'), notes: v('notes'), consent: true, website: v('website'),
+  };
+  $('go').disabled = true; $('go').textContent = 'Booking…';
+  try {
+    let res = { ok: true };
+    if (SCRIPT_URL) res = await (await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(body) })).json();
+    if (!res.ok) {
+      $('err').textContent = res.error || 'Something went wrong. Please try again.';
+      if (res.full) { await loadCounts(); renderSlots(); }
+      return;
+    }
+    done(body);
+  } catch (err) {
+    $('err').textContent = 'We could not reach the booking system. Please try again, or call (781) 404-3490.';
+  } finally {
+    $('go').disabled = false; $('go').textContent = 'Book my free class';
+  }
+};
+
+function done(b) {
+  ['s1', 's2', 's3'].forEach(id => $(id).classList.add('hidden'));
+  $('s4').classList.remove('hidden');
+  $('doneText').innerHTML = `<b>${b.child}</b> is booked for <b>${b.program}</b><br>${b.dateLabel} at ${b.timeLabel}`;
+  const st = pick.at, en = new Date(st.getTime() + 45 * 6e4);
+  const z = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+  const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//KidsUnited Woburn//EN', 'BEGIN:VEVENT',
+    `UID:${Date.now()}@book.kidsunitedwoburn.com`, `DTSTAMP:${z(new Date())}`,
+    `DTSTART;TZID=America/New_York:${z(st)}`, `DTEND;TZID=America/New_York:${z(en)}`,
+    `SUMMARY:${b.child}'s free trial – KidsUnited Woburn`, 'LOCATION:240 W Cummings Park\\, Woburn\\, MA 01801',
+    'DESCRIPTION:Arrive 10 minutes early. Comfy clothes\\, sneakers\\, water bottle. (781) 404-3490',
+    'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  $('ics').href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+  $('ics').download = 'kidsunited-trial.ics';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function loadCounts() {
+  if (!SCRIPT_URL) return;
+  try { const j = await (await fetch(SCRIPT_URL)).json(); counts = j.counts || {}; capacity = j.capacity || capacity; } catch (e) {}
+}
+
+(async () => {
+  renderAges();
+  try {
+    const [s] = await Promise.all([fetch(SCHEDULE_URL).then(r => r.json()), loadCounts()]);
+    schedule = s.data || [];
+  } catch (e) {
+    $('ages').insertAdjacentHTML('afterend', '<p class="err">We could not load the class schedule. Please call (781) 404-3490.</p>');
+  }
+  const pre = new URLSearchParams(location.search).get('age');   // e.g. ?age=kub from an ad
+  const map = { kub: 0, champs: 1, junior: 2, dts: 3, pro: 4 };
+  if (pre in map) choose(PROGRAMS[map[pre]]);
+})();
+</script>
+</body>
+</html>
